@@ -1,0 +1,82 @@
+http:
+  routers:
+    netbird-dashboard:
+      rule: Host(`netbird.homelab.eu`)
+      entryPoints:
+        - websecure
+      service: netbird-dashboard
+      tls:
+        certResolver: le
+      priority: 10
+
+    netbird-api:
+      rule: Host(`netbird.homelab.eu`) && PathPrefix(`/api`)
+      entryPoints:
+        - websecure
+      service: netbird-server-h2c
+      tls:
+        certResolver: le
+      priority: 20
+
+    netbird-oauth2:
+      rule: Host(`netbird.homelab.eu`) && PathPrefix(`/oauth2`)
+      entryPoints:
+        - websecure
+      service: netbird-server-h2c
+      tls:
+        certResolver: le
+      priority: 20
+
+    netbird-ws-relay:
+      rule: Host(`netbird.homelab.eu`) && PathPrefix(`/relay`)
+      entryPoints:
+        - websecure
+      service: netbird-server
+      tls:
+        certResolver: le
+      priority: 30
+
+    netbird-ws-proxy:
+      rule: Host(`netbird.homelab.eu`) && PathPrefix(`/ws-proxy/`)
+      entryPoints:
+        - websecure
+      service: netbird-server
+      tls:
+        certResolver: le
+      priority: 30
+
+    netbird-grpc-management:
+      rule: Host(`netbird.homelab.eu`) && PathPrefix(`/management.ManagementService/`)
+      entryPoints:
+        - websecure
+      service: netbird-server-h2c
+      tls:
+        certResolver: le
+      priority: 40
+
+    netbird-grpc-signal:
+      rule: Host(`netbird.homelab.eu`) && PathPrefix(`/signalexchange.SignalExchange/`)
+      entryPoints:
+        - websecure
+      service: netbird-server-h2c
+      tls:
+        certResolver: le
+      priority: 40
+
+  services:
+    netbird-server:
+      loadBalancer:
+        servers:
+          - url: http://netbird-server:80
+
+    netbird-server-h2c:
+      loadBalancer:
+        servers:
+          - url: h2c://netbird-server:80
+        passHostHeader: true
+
+    netbird-dashboard:
+      loadBalancer:
+        servers:
+          - url: http://netbird-dashboard:80
+        passHostHeader: true

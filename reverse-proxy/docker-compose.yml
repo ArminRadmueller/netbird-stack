@@ -1,0 +1,27 @@
+services:
+  
+  reverse-proxy:
+    container_name: reverse-proxy
+    image: traefik:latest
+    environment:
+      TZ: 'Europe/Rome'    
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/traefik:/etc/traefik:ro
+      - ./config/certificates:/letsencrypt:rw
+    networks:
+      - frontend
+      - backend
+    restart: always
+
+networks:
+
+  frontend:
+    name: frontend
+    driver: bridge
+
+  backend:
+    name: backend
+    driver: bridge

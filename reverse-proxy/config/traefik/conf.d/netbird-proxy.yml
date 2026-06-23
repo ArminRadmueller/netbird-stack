@@ -1,0 +1,16 @@
+tcp:
+  routers:
+    netbird-proxy-catchall:
+      rule: HostSNI(`*`)
+      entryPoints:
+        - websecure
+      service: netbird-proxy-svc
+      tls:
+        passthrough: true
+      priority: 1
+
+  services:
+    netbird-proxy-svc:
+      loadBalancer:
+        servers:
+          - address: netbird-proxy:8443
